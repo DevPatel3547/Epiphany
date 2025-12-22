@@ -6,14 +6,94 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		1D51FC982EF8CD7200EDA0B7 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D51FC972EF8CD7200EDA0B7 /* WidgetKit.framework */; };
+		1D51FC9A2EF8CD7200EDA0B7 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D51FC992EF8CD7200EDA0B7 /* SwiftUI.framework */; };
+		1D51FCAB2EF8CD7300EDA0B7 /* EpiphanyWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 1D51FC952EF8CD7200EDA0B7 /* EpiphanyWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		1D51FCE72EF8CFE800EDA0B7 /* Configuration.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 1D51FCE62EF8CFE800EDA0B7 /* Configuration.storekit */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		1D51FCA92EF8CD7300EDA0B7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1D51FC792EF8CCC800EDA0B7 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1D51FC942EF8CD7200EDA0B7;
+			remoteInfo = EpiphanyWidgetExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		1D51FCB02EF8CD7300EDA0B7 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				1D51FCAB2EF8CD7300EDA0B7 /* EpiphanyWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		1D51FC812EF8CCC800EDA0B7 /* Epiphany.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Epiphany.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1D51FC952EF8CD7200EDA0B7 /* EpiphanyWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = EpiphanyWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		1D51FC972EF8CD7200EDA0B7 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		1D51FC992EF8CD7200EDA0B7 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		1D51FCE52EF8CFD900EDA0B7 /* Epiphany.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Epiphany.entitlements; sourceTree = "<group>"; };
+		1D51FCE62EF8CFE800EDA0B7 /* Configuration.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Configuration.storekit; sourceTree = "<group>"; };
+		1D51FCE82EF8CFF400EDA0B7 /* EpiphanyWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = EpiphanyWidget.entitlements; sourceTree = "<group>"; };
+		1D51FCEA2EF8D1A800EDA0B7 /* EpiphanyWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = EpiphanyWidgetExtension.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		1D51FCAC2EF8CD7300EDA0B7 /* Exceptions for "EpiphanyWidget" folder in "EpiphanyWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				EpiphanyWidget/Info.plist,
+				Info.plist,
+			);
+			target = 1D51FC942EF8CD7200EDA0B7 /* EpiphanyWidgetExtension */;
+		};
+		1D51FCD82EF8CF1C00EDA0B7 /* Exceptions for "Epiphany" folder in "EpiphanyWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Shared/AppGroup.swift,
+				Shared/DataManager.swift,
+				Shared/NotificationManager.swift,
+				Shared/SubscriptionManager.swift,
+				Shared/ThemeModel.swift,
+				Shared/ThoughtModel.swift,
+			);
+			target = 1D51FC942EF8CD7200EDA0B7 /* EpiphanyWidgetExtension */;
+		};
+		1D51FCEB2EF8D2DD00EDA0B7 /* Exceptions for "Epiphany" folder in "Epiphany" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				EpiphanyApp/Info.plist,
+			);
+			target = 1D51FC802EF8CCC800EDA0B7 /* Epiphany */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		1D51FC832EF8CCC800EDA0B7 /* Epiphany */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				1D51FCEB2EF8D2DD00EDA0B7 /* Exceptions for "Epiphany" folder in "Epiphany" target */,
+				1D51FCD82EF8CF1C00EDA0B7 /* Exceptions for "Epiphany" folder in "EpiphanyWidgetExtension" target */,
+			);
 			path = Epiphany;
+			sourceTree = "<group>";
+		};
+		1D51FC9B2EF8CD7200EDA0B7 /* EpiphanyWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				1D51FCAC2EF8CD7300EDA0B7 /* Exceptions for "EpiphanyWidget" folder in "EpiphanyWidgetExtension" target */,
+			);
+			path = EpiphanyWidget;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -26,14 +106,29 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		1D51FC922EF8CD7200EDA0B7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1D51FC9A2EF8CD7200EDA0B7 /* SwiftUI.framework in Frameworks */,
+				1D51FC982EF8CD7200EDA0B7 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		1D51FC782EF8CCC800EDA0B7 = {
 			isa = PBXGroup;
 			children = (
+				1D51FCEA2EF8D1A800EDA0B7 /* EpiphanyWidgetExtension.entitlements */,
 				1D51FC832EF8CCC800EDA0B7 /* Epiphany */,
+				1D51FC9B2EF8CD7200EDA0B7 /* EpiphanyWidget */,
+				1D51FC962EF8CD7200EDA0B7 /* Frameworks */,
 				1D51FC822EF8CCC800EDA0B7 /* Products */,
+				1D51FCE52EF8CFD900EDA0B7 /* Epiphany.entitlements */,
+				1D51FCE62EF8CFE800EDA0B7 /* Configuration.storekit */,
+				1D51FCE82EF8CFF400EDA0B7 /* EpiphanyWidget.entitlements */,
 			);
 			sourceTree = "<group>";
 		};
@@ -41,8 +136,18 @@
 			isa = PBXGroup;
 			children = (
 				1D51FC812EF8CCC800EDA0B7 /* Epiphany.app */,
+				1D51FC952EF8CD7200EDA0B7 /* EpiphanyWidgetExtension.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		1D51FC962EF8CD7200EDA0B7 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1D51FC972EF8CD7200EDA0B7 /* WidgetKit.framework */,
+				1D51FC992EF8CD7200EDA0B7 /* SwiftUI.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -55,10 +160,12 @@
 				1D51FC7D2EF8CCC800EDA0B7 /* Sources */,
 				1D51FC7E2EF8CCC800EDA0B7 /* Frameworks */,
 				1D51FC7F2EF8CCC800EDA0B7 /* Resources */,
+				1D51FCB02EF8CD7300EDA0B7 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				1D51FCAA2EF8CD7300EDA0B7 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				1D51FC832EF8CCC800EDA0B7 /* Epiphany */,
@@ -69,6 +176,28 @@
 			productName = Epiphany;
 			productReference = 1D51FC812EF8CCC800EDA0B7 /* Epiphany.app */;
 			productType = "com.apple.product-type.application";
+		};
+		1D51FC942EF8CD7200EDA0B7 /* EpiphanyWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1D51FCAD2EF8CD7300EDA0B7 /* Build configuration list for PBXNativeTarget "EpiphanyWidgetExtension" */;
+			buildPhases = (
+				1D51FC912EF8CD7200EDA0B7 /* Sources */,
+				1D51FC922EF8CD7200EDA0B7 /* Frameworks */,
+				1D51FC932EF8CD7200EDA0B7 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				1D51FC9B2EF8CD7200EDA0B7 /* EpiphanyWidget */,
+			);
+			name = EpiphanyWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = EpiphanyWidgetExtension;
+			productReference = 1D51FC952EF8CD7200EDA0B7 /* EpiphanyWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -81,6 +210,9 @@
 				LastUpgradeCheck = 2600;
 				TargetAttributes = {
 					1D51FC802EF8CCC800EDA0B7 = {
+						CreatedOnToolsVersion = 26.0;
+					};
+					1D51FC942EF8CD7200EDA0B7 = {
 						CreatedOnToolsVersion = 26.0;
 					};
 				};
@@ -100,12 +232,21 @@
 			projectRoot = "";
 			targets = (
 				1D51FC802EF8CCC800EDA0B7 /* Epiphany */,
+				1D51FC942EF8CD7200EDA0B7 /* EpiphanyWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		1D51FC7F2EF8CCC800EDA0B7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1D51FCE72EF8CFE800EDA0B7 /* Configuration.storekit in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1D51FC932EF8CD7200EDA0B7 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -122,7 +263,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		1D51FC912EF8CD7200EDA0B7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		1D51FCAA2EF8CD7300EDA0B7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1D51FC942EF8CD7200EDA0B7 /* EpiphanyWidgetExtension */;
+			targetProxy = 1D51FCA92EF8CD7300EDA0B7 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		1D51FC8C2EF8CCC900EDA0B7 /* Debug */ = {
@@ -249,8 +405,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Epiphany/Epiphany.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -280,8 +438,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Epiphany/Epiphany.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -306,6 +466,68 @@
 			};
 			name = Release;
 		};
+		1D51FCAE2EF8CD7300EDA0B7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = EpiphanyWidgetExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = EpiphanyWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = EpiphanyWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.thefool.Epiphany.EpiphanyWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		1D51FCAF2EF8CD7300EDA0B7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = EpiphanyWidgetExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = EpiphanyWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = EpiphanyWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.thefool.Epiphany.EpiphanyWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -323,6 +545,15 @@
 			buildConfigurations = (
 				1D51FC8F2EF8CCC900EDA0B7 /* Debug */,
 				1D51FC902EF8CCC900EDA0B7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1D51FCAD2EF8CD7300EDA0B7 /* Build configuration list for PBXNativeTarget "EpiphanyWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1D51FCAE2EF8CD7300EDA0B7 /* Debug */,
+				1D51FCAF2EF8CD7300EDA0B7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
