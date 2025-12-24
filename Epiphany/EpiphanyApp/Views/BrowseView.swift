@@ -12,7 +12,7 @@ struct BrowseView: View {
     
     @State private var selectedCategory: String? = nil
     @State private var searchText = ""
-    @State private var selectedThemeID: String = "classic"
+    @AppStorage("selectedThemeID") private var selectedThemeID: String = "dark"
     
     private var filteredThoughts: [Thought] {
         var results = allThoughts
@@ -63,11 +63,6 @@ struct BrowseView: View {
             }
             .navigationTitle("Browse")
             .searchable(text: $searchText, prompt: "Search thoughts")
-            .onAppear {
-                if let themeID = AppGroup.shared?.string(forKey: AppGroup.Keys.selectedThemeID) {
-                    selectedThemeID = themeID
-                }
-            }
         }
     }
 }

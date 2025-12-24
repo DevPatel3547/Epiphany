@@ -7,7 +7,7 @@ import SwiftUI
 
 struct ThemesView: View {
     @EnvironmentObject var subscriptionManager: SubscriptionManager
-    @State private var selectedThemeID: String = "classic"
+    @AppStorage("selectedThemeID") private var selectedThemeID: String = "dark"
     @State private var showPaywall = false
     
     var body: some View {
@@ -53,11 +53,6 @@ struct ThemesView: View {
                 .padding(.vertical)
             }
             .navigationTitle("Themes")
-            .onAppear {
-                if let themeID = AppGroup.shared?.string(forKey: AppGroup.Keys.selectedThemeID) {
-                    selectedThemeID = themeID
-                }
-            }
             .sheet(isPresented: $showPaywall) {
                 PaywallView()
             }

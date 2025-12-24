@@ -10,7 +10,7 @@ struct FavoritesView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(filter: #Predicate<Thought> { $0.isFavorite == true }) private var favorites: [Thought]
     
-    @State private var selectedThemeID: String = "classic"
+    @AppStorage("selectedThemeID") private var selectedThemeID: String = "dark"
     
     private var currentTheme: AppTheme {
         AppTheme.defaultThemes.first { $0.id == selectedThemeID } ?? AppTheme.defaultThemes[0]
@@ -39,11 +39,6 @@ struct FavoritesView: View {
                     }
                 }
                 .navigationTitle("Favorites")
-            }
-        }
-        .onAppear {
-            if let themeID = AppGroup.shared?.string(forKey: AppGroup.Keys.selectedThemeID) {
-                selectedThemeID = themeID
             }
         }
     }
