@@ -2,8 +2,6 @@
 //  TodayView.swift
 //  Epiphany
 //
-//  Complete implementation with all features and fixes
-//
 
 import SwiftUI
 import SwiftData
@@ -17,7 +15,7 @@ struct TodayView: View {
     @State private var showPaywall = false
     
     private var currentTheme: AppTheme {
-        AppTheme.defaultThemes.first { $0.id == selectedThemeID } ?? AppTheme.defaultThemes[0]
+        AppTheme.defaultThemes.first { $0.id == selectedThemeID } ?? AppTheme.defaultThemes[1]
     }
     
     var body: some View {
@@ -82,7 +80,7 @@ struct TodayView: View {
                         }
                         .scrollTargetLayout()
                     }
-                    .scrollTargetBehavior(.paging) // Block-based scrolling, each card snaps into place
+                    .scrollTargetBehavior(.paging)
                     .scrollIndicators(.hidden)
                 }
             }
@@ -126,7 +124,7 @@ struct ThoughtCardView: View {
             
             Spacer()
             
-            // Action buttons INSIDE each card (always visible, no need to scroll)
+            // Action buttons INSIDE each card
             HStack(spacing: 50) {
                 // Share button
                 ShareLink(item: thought.text) {
@@ -174,7 +172,6 @@ struct ThoughtCardView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(
-            // Card with clear boundaries but smooth blending
             RoundedRectangle(cornerRadius: 24)
                 .fill(theme.backgroundUIColor.opacity(0.95))
                 .shadow(color: .black.opacity(0.05), radius: 12, x: 0, y: 4)

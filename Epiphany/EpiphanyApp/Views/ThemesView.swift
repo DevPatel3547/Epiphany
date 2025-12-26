@@ -120,3 +120,8 @@ struct ThemeCard: View {
         }
     }
 }
+
+#Preview {
+    ThemesView()
+        .environmentObject(SubscriptionManager.shared)
+}

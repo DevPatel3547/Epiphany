@@ -2,8 +2,6 @@
 //  ContentView.swift
 //  Epiphany
 //
-//  Main tab view with global theme support
-//
 
 import SwiftUI
 import SwiftData
@@ -13,7 +11,7 @@ struct ContentView: View {
     @AppStorage("selectedThemeID") private var selectedThemeID: String = "dark"
     
     private var currentTheme: AppTheme {
-        AppTheme.defaultThemes.first { $0.id == selectedThemeID } ?? AppTheme.defaultThemes[0]
+        AppTheme.defaultThemes.first { $0.id == selectedThemeID } ?? AppTheme.defaultThemes[1]
     }
     
     var body: some View {

@@ -2,8 +2,6 @@
 //  EpiphanyWidget.swift
 //  EpiphanyWidget
 //
-//  Completely invisible widget - blends perfectly into home screen
-//
 
 import WidgetKit
 import SwiftUI
@@ -84,7 +82,6 @@ struct ThoughtEntry: TimelineEntry {
     let theme: AppTheme
 }
 
-// MARK: - Widget View (NO VISIBLE BOX)
 struct EpiphanyWidgetEntryView: View {
     var entry: ThoughtEntry
     @Environment(\.widgetFamily) var family
@@ -93,7 +90,6 @@ struct EpiphanyWidgetEntryView: View {
         VStack(spacing: 0) {
             Spacer()
             
-            // Just the text - clean, centered, floating
             Text(entry.thought.text)
                 .font(fontForFamily(family))
                 .fontWeight(.medium)
@@ -105,7 +101,6 @@ struct EpiphanyWidgetEntryView: View {
             
             Spacer()
             
-            // Tiny category indicator at bottom - super minimal
             if family != .systemSmall {
                 Text(entry.thought.category.uppercased())
                     .font(.system(size: 9, weight: .semibold, design: .rounded))
@@ -177,11 +172,6 @@ struct EpiphanyWidget: Widget {
     ThoughtEntry(
         date: .now,
         thought: Thought(id: "1", text: "Positive mind, positive vibes, positive life", category: "Motivation"),
-        theme: AppTheme.defaultThemes[1]
-    )
-    ThoughtEntry(
-        date: .now,
-        thought: Thought(id: "2", text: "We're all just walking each other home", category: "Philosophy"),
         theme: AppTheme.defaultThemes[1]
     )
 }

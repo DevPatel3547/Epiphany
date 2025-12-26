@@ -2,8 +2,6 @@
 //  NotificationManager.swift
 //  Epiphany
 //
-//  Manages local notifications for daily thoughts
-//
 
 import Foundation
 import UserNotifications
@@ -16,94 +14,83 @@ class NotificationManager: ObservableObject {
     @Published var isAuthorized: Bool = false
     @Published var scheduledTimes: [DateComponents] = []
     
-    init() {
+    var notificationLimit: Int {
+        let isPremium = AppGroup.shared?.bool(forKey: AppGroup.Keys.isPremium) ?? false
+        return isPremium ? 999 : 3
+    }
+    
+    private init() {
         Task {
-            await checkAuthorization()
-            loadScheduledTimes()
+            await checkAuthorizationStatus()
+            await loadScheduledNotifications()
         }
     }
     
     func requestAuthorization() async {
         do {
-            isAuthorized = try await UNUserNotificationCenter.current()
-                .requestAuthorization(options: [.alert, .sound, .badge])
-            
-            if isAuthorized {
-                await scheduleDefaultNotifications()
-            }
+            isAuthorized = try await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge])
         } catch {
-            print("Failed to request notification authorization: \(error)")
+            print("Failed to request authorization: \(error)")
         }
     }
     
-    func checkAuthorization() async {
+    func checkAuthorizationStatus() async {
         let settings = await UNUserNotificationCenter.current().notificationSettings()
         isAuthorized = settings.authorizationStatus == .authorized
     }
     
-    func scheduleDefaultNotifications() async {
-        // Default to 9 AM daily
-        let components = DateComponents(hour: 9, minute: 0)
-        await scheduleNotification(at: components)
-    }
-    
-    func scheduleNotification(at time: DateComponents) async {
-        let content = UNMutableNotificationContent()
-        content.title = "Today's Thought"
+    func scheduleNotification(at components: DateComponents) async {
+        // Check notification limit (FREE: 3, PREMIUM: unlimited)
+        let isPremium = AppGroup.shared?.bool(forKey: AppGroup.Keys.isPremium) ?? false
         
-        // Get a random thought for the notification
-        if let thought = DataManager.shared.getRandomThought() {
-            content.body = thought.text
-        } else {
-            content.body = "Tap to see your daily shower thought"
+        if !isPremium && scheduledTimes.count >= 3 {
+            print("Free tier limit: Maximum 3 notifications per day")
+            return
         }
         
+        guard isAuthorized else {
+            await requestAuthorization()
+            return
+        }
+        
+        let content = UNMutableNotificationContent()
+        content.title = "Daily Epiphany"
+        content.body = "Time for your daily shower thought"
         content.sound = .default
         
-        let trigger = UNCalendarNotificationTrigger(dateMatching: time, repeats: true)
-        let request = UNNotificationRequest(
-            identifier: "daily-thought-\(time.hour ?? 0)-\(time.minute ?? 0)",
-            content: content,
-            trigger: trigger
-        )
+        let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: true)
+        let identifier = "epiphany-\(components.hour ?? 0)-\(components.minute ?? 0)"
+        let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
         
         do {
             try await UNUserNotificationCenter.current().add(request)
-            
-            // Save to scheduled times
-            if !scheduledTimes.contains(where: { $0.hour == time.hour && $0.minute == time.minute }) {
-                scheduledTimes.append(time)
-                saveScheduledTimes()
-            }
+            scheduledTimes.append(components)
+            saveScheduledTimes()
         } catch {
             print("Failed to schedule notification: \(error)")
         }
     }
     
-    func removeNotification(at time: DateComponents) {
-        let identifier = "daily-thought-\(time.hour ?? 0)-\(time.minute ?? 0)"
+    func removeNotification(at components: DateComponents) {
+        let identifier = "epiphany-\(components.hour ?? 0)-\(components.minute ?? 0)"
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [identifier])
         
-        scheduledTimes.removeAll { $0.hour == time.hour && $0.minute == time.minute }
+        scheduledTimes.removeAll { $0.hour == components.hour && $0.minute == components.minute }
         saveScheduledTimes()
     }
     
-    func removeAllNotifications() {
-        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
-        scheduledTimes.removeAll()
-        saveScheduledTimes()
-    }
-    
-    private func saveScheduledTimes() {
-        if let encoded = try? JSONEncoder().encode(scheduledTimes) {
-            AppGroup.shared?.set(encoded, forKey: AppGroup.Keys.notificationTimes)
+    private func loadScheduledNotifications() async {
+        let requests = await UNUserNotificationCenter.current().pendingNotificationRequests()
+        scheduledTimes = requests.compactMap { request in
+            guard let trigger = request.trigger as? UNCalendarNotificationTrigger else { return nil }
+            return trigger.dateComponents
         }
     }
     
-    private func loadScheduledTimes() {
-        if let data = AppGroup.shared?.data(forKey: AppGroup.Keys.notificationTimes),
-           let times = try? JSONDecoder().decode([DateComponents].self, from: data) {
-            scheduledTimes = times
+    private func saveScheduledTimes() {
+        // Save to UserDefaults for persistence
+        if let encoded = try? JSONEncoder().encode(scheduledTimes) {
+            UserDefaults.standard.set(encoded, forKey: "scheduledNotificationTimes")
         }
     }
 }

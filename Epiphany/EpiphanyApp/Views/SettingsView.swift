@@ -60,7 +60,27 @@ struct SettingsView: View {
                         }
                         
                         Button("Add Time") {
-                            showAddTime = true
+                            // Check notification limit
+                            let limit = notificationManager.notificationLimit
+                            if notificationManager.scheduledTimes.count >= limit {
+                                if !subscriptionManager.isPremium {
+                                    // Show paywall for free users at limit
+                                    showPaywall = true
+                                }
+                            } else {
+                                showAddTime = true
+                            }
+                        }
+                        
+                        // Show limit indicator
+                        Text("Notifications: \(notificationManager.scheduledTimes.count)/\(notificationManager.notificationLimit)")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        
+                        if !subscriptionManager.isPremium {
+                            Text("Free tier: Up to 3 notifications per day")
+                                .font(.caption2)
+                                .foregroundColor(.orange)
                         }
                     } else {
                         Button("Enable Notifications") {
@@ -79,6 +99,9 @@ struct SettingsView: View {
                         Text("1.0.0")
                             .foregroundColor(.secondary)
                     }
+                    
+                    Link("Privacy Policy", destination: URL(string: "https://example.com/privacy")!)
+                    Link("Terms of Service", destination: URL(string: "https://example.com/terms")!)
                 }
             }
             .navigationTitle("Settings")
@@ -94,43 +117,93 @@ struct SettingsView: View {
     private func formatTime(_ components: DateComponents) -> String {
         let hour = components.hour ?? 0
         let minute = components.minute ?? 0
-        let period = hour >= 12 ? "PM" : "AM"
-        let displayHour = hour % 12 == 0 ? 12 : hour % 12
-        return String(format: "%d:%02d %@", displayHour, minute, period)
+        let formatter = DateFormatter()
+        formatter.timeStyle = .short
+        
+        var dateComponents = DateComponents()
+        dateComponents.hour = hour
+        dateComponents.minute = minute
+        
+        if let date = Calendar.current.date(from: dateComponents) {
+            return formatter.string(from: date)
+        }
+        
+        return "\(hour):\(String(format: "%02d", minute))"
     }
 }
 
 struct AddNotificationTimeView: View {
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject var notificationManager: NotificationManager
-    @State private var selectedTime = Date()
+    
+    @State private var selectedHour = 9
+    @State private var selectedMinute = 0
     
     var body: some View {
         NavigationStack {
-            VStack {
-                DatePicker("Time", selection: $selectedTime, displayedComponents: .hourAndMinute)
-                    .datePickerStyle(.wheel)
-                    .labelsHidden()
+            VStack(spacing: 24) {
+                Text("Add Notification Time")
+                    .font(.title2.bold())
+                    .padding(.top)
+                
+                HStack {
+                    Picker("Hour", selection: $selectedHour) {
+                        ForEach(0..<24) { hour in
+                            Text("\(hour)")
+                                .tag(hour)
+                        }
+                    }
+                    .pickerStyle(.wheel)
+                    .frame(width: 100)
+                    
+                    Text(":")
+                        .font(.title)
+                    
+                    Picker("Minute", selection: $selectedMinute) {
+                        ForEach(0..<60) { minute in
+                            Text(String(format: "%02d", minute))
+                                .tag(minute)
+                        }
+                    }
+                    .pickerStyle(.wheel)
+                    .frame(width: 100)
+                }
+                
+                Button {
+                    var components = DateComponents()
+                    components.hour = selectedHour
+                    components.minute = selectedMinute
+                    
+                    Task {
+                        await notificationManager.scheduleNotification(at: components)
+                        dismiss()
+                    }
+                } label: {
+                    Text("Add Notification")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.blue)
+                        .cornerRadius(12)
+                }
+                .padding(.horizontal)
                 
                 Spacer()
             }
-            .navigationTitle("Add Reminder")
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Add") {
-                        let calendar = Calendar.current
-                        let components = calendar.dateComponents([.hour, .minute], from: selectedTime)
-                        Task {
-                            await notificationManager.scheduleNotification(at: components)
-                            dismiss()
-                        }
+                    Button("Cancel") {
+                        dismiss()
                     }
                 }
             }
         }
     }
+}
+
+#Preview {
+    SettingsView()
+        .environmentObject(SubscriptionManager.shared)
+        .environmentObject(NotificationManager.shared)
 }

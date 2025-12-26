@@ -33,10 +33,31 @@ struct PaywallView: View {
                     
                     // Features
                     VStack(alignment: .leading, spacing: 16) {
-                        FeatureRow(icon: "paintpalette.fill", title: "All Premium Themes", description: "6 exclusive themes")
-                        FeatureRow(icon: "arrow.triangle.2.circlepath", title: "Frequent Widget Updates", description: "Higher refresh rate")
-                        FeatureRow(icon: "bell.fill", title: "Unlimited Notifications", description: "Set multiple daily reminders")
-                        FeatureRow(icon: "heart.fill", title: "Support Development", description: "Help us create more content")
+                        FeatureRow(
+                            icon: "list.bullet.rectangle",
+                            title: "Browse by Category",
+                            description: "Explore thoughts by genre"
+                        )
+                        FeatureRow(
+                            icon: "paintpalette.fill",
+                            title: "7 Premium Themes",
+                            description: "Beautiful exclusive colors"
+                        )
+                        FeatureRow(
+                            icon: "bell.badge.fill",
+                            title: "Unlimited Notifications",
+                            description: "Set as many reminders as you want"
+                        )
+                        FeatureRow(
+                            icon: "arrow.triangle.2.circlepath",
+                            title: "Faster Widget Updates",
+                            description: "Refresh every hour vs every 4 hours"
+                        )
+                        FeatureRow(
+                            icon: "sparkles",
+                            title: "Early Access",
+                            description: "Get new features first"
+                        )
                     }
                     .padding(.horizontal)
                     
@@ -58,7 +79,7 @@ struct PaywallView: View {
                                         .tint(.white)
                                 } else {
                                     Text("Subscribe Now")
-                                        .fontWeight(.semibold)
+                                        .font(.headline)
                                 }
                             }
                             .frame(maxWidth: .infinity)
@@ -66,44 +87,52 @@ struct PaywallView: View {
                             .background(Color.blue)
                             .foregroundColor(.white)
                             .cornerRadius(12)
+                            .padding(.horizontal)
                             .disabled(isPurchasing)
+                            
+                            Text("7-day free trial, then \(product.displayPrice)/month")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
                         }
-                        .padding(.horizontal)
-                        .padding(.top, 20)
+                        .padding(.top, 8)
                     }
                     
-                    // Terms
+                    // Footer
                     VStack(spacing: 8) {
-                        Text("Auto-renewable subscription")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        
-                        HStack(spacing: 16) {
-                            Button("Terms of Service") { }
-                            Button("Privacy Policy") { }
-                            Button("Restore") {
-                                Task {
-                                    await subscriptionManager.restorePurchases()
-                                }
+                        Button("Restore Purchases") {
+                            Task {
+                                await subscriptionManager.restorePurchases()
                             }
                         }
                         .font(.caption)
+                        .foregroundColor(.secondary)
+                        
+                        Text("Cancel anytime. Auto-renews monthly.")
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal)
                     }
-                    .padding(.top)
+                    .padding(.bottom, 40)
                 }
-                .padding()
             }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Close") { dismiss() }
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .foregroundColor(.secondary)
+                    }
                 }
             }
         }
     }
     
     private func purchase(_ product: Product) {
+        isPurchasing = true
+        
         Task {
-            isPurchasing = true
             do {
                 _ = try await subscriptionManager.purchase(product)
                 dismiss()
@@ -125,17 +154,22 @@ struct FeatureRow: View {
             Image(systemName: icon)
                 .font(.title2)
                 .foregroundColor(.blue)
-                .frame(width: 32)
+                .frame(width: 40)
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(.headline)
                 Text(description)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundColor(.secondary)
             }
             
             Spacer()
         }
     }
+}
+
+#Preview {
+    PaywallView()
+        .environmentObject(SubscriptionManager.shared)
 }

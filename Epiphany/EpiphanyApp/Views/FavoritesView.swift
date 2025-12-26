@@ -13,7 +13,7 @@ struct FavoritesView: View {
     @AppStorage("selectedThemeID") private var selectedThemeID: String = "dark"
     
     private var currentTheme: AppTheme {
-        AppTheme.defaultThemes.first { $0.id == selectedThemeID } ?? AppTheme.defaultThemes[0]
+        AppTheme.defaultThemes.first { $0.id == selectedThemeID } ?? AppTheme.defaultThemes[1]
     }
     
     var body: some View {
@@ -42,4 +42,9 @@ struct FavoritesView: View {
             }
         }
     }
+}
+
+#Preview {
+    FavoritesView()
+        .modelContainer(DataManager.shared.modelContainer)
 }
