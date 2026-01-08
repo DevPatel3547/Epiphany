@@ -10,7 +10,6 @@
 		1D51FC982EF8CD7200EDA0B7 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D51FC972EF8CD7200EDA0B7 /* WidgetKit.framework */; };
 		1D51FC9A2EF8CD7200EDA0B7 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D51FC992EF8CD7200EDA0B7 /* SwiftUI.framework */; };
 		1D51FCAB2EF8CD7300EDA0B7 /* EpiphanyWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 1D51FC952EF8CD7200EDA0B7 /* EpiphanyWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		1D51FCE72EF8CFE800EDA0B7 /* Configuration.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 1D51FCE62EF8CFE800EDA0B7 /* Configuration.storekit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -242,7 +241,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1D51FCE72EF8CFE800EDA0B7 /* Configuration.storekit in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

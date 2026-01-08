@@ -61,41 +61,58 @@ struct PaywallView: View {
                     }
                     .padding(.horizontal)
                     
-                    // Product
-                    if let product = subscriptionManager.products.first {
-                        VStack(spacing: 12) {
-                            Text(product.displayPrice)
-                                .font(.title.bold())
-                            Text("per month")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                            
-                            Button {
-                                purchase(product)
-                            } label: {
-                                if isPurchasing {
-                                    ProgressView()
-                                        .progressViewStyle(.circular)
-                                        .tint(.white)
-                                } else {
-                                    Text("Subscribe Now")
-                                        .font(.headline)
-                                }
+                    // Subscribe Button - ALWAYS SHOW
+                    VStack(spacing: 16) {
+                        if subscriptionManager.products.isEmpty {
+                            // Loading or no products
+                            VStack(spacing: 12) {
+                                ProgressView()
+                                Text("Loading subscription options...")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
                             }
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.blue)
-                            .foregroundColor(.white)
-                            .cornerRadius(12)
+                            .frame(height: 100)
+                        } else if let product = subscriptionManager.products.first {
+                            // Product available
+                            VStack(spacing: 12) {
+                                Text(product.displayPrice)
+                                    .font(.title.bold())
+                                Text("per month")
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                                
+                                Button {
+                                    purchase(product)
+                                } label: {
+                                    if isPurchasing {
+                                        ProgressView()
+                                            .progressViewStyle(.circular)
+                                            .tint(.white)
+                                    } else {
+                                        Text("Subscribe Now")
+                                            .font(.headline)
+                                    }
+                                }
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color.blue)
+                                .foregroundColor(.white)
+                                .cornerRadius(12)
+                                .disabled(isPurchasing)
+                                
+                                Text("7-day free trial, then \(product.displayPrice)/month")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
                             .padding(.horizontal)
-                            .disabled(isPurchasing)
-                            
-                            Text("7-day free trial, then \(product.displayPrice)/month")
+                        } else {
+                            // Fallback if no products
+                            Text("Subscription temporarily unavailable")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
-                        .padding(.top, 8)
                     }
+                    .padding(.top, 8)
                     
                     // Footer
                     VStack(spacing: 8) {
@@ -112,6 +129,18 @@ struct PaywallView: View {
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
                             .padding(.horizontal)
+                        
+                        // DEBUG: Override for testing
+                        #if DEBUG
+                        Button("🔓 Enable Premium (DEBUG)") {
+                            AppGroup.shared?.set(true, forKey: AppGroup.Keys.isPremium)
+                            subscriptionManager.isPremium = true
+                            dismiss()
+                        }
+                        .font(.caption2)
+                        .foregroundColor(.orange)
+                        .padding(.top, 20)
+                        #endif
                     }
                     .padding(.bottom, 40)
                 }
@@ -124,6 +153,12 @@ struct PaywallView: View {
                         Image(systemName: "xmark.circle.fill")
                             .foregroundColor(.secondary)
                     }
+                }
+            }
+            .onAppear {
+                // Load products when paywall appears
+                Task {
+                    await subscriptionManager.loadProducts()
                 }
             }
         }

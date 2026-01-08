@@ -17,7 +17,7 @@ class SubscriptionManager: ObservableObject {
     @Published var products: [Product] = []
     
     // Placeholder product ID - replace with actual ID from App Store Connect
-    private let premiumProductID = "com.epiphany.premium.monthly"
+    private let premiumProductID = "com.thefool.Epiphany.premium.monthly"
     
     private var updateListenerTask: Task<Void, Never>? = nil
     

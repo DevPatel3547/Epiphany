@@ -53,9 +53,12 @@ class NotificationManager: ObservableObject {
             return
         }
         
+        // Get random thought for notification
+        let thought = getRandomThought()
+        
         let content = UNMutableNotificationContent()
-        content.title = "Daily Epiphany"
-        content.body = "Time for your daily shower thought"
+        content.title = "💭 Epiphany"
+        content.body = thought  // Show actual thought text
         content.sound = .default
         
         let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: true)
@@ -88,9 +91,24 @@ class NotificationManager: ObservableObject {
     }
     
     private func saveScheduledTimes() {
-        // Save to UserDefaults for persistence
         if let encoded = try? JSONEncoder().encode(scheduledTimes) {
             UserDefaults.standard.set(encoded, forKey: "scheduledNotificationTimes")
         }
+    }
+    
+    private func getRandomThought() -> String {
+        let thoughts = [
+            "If you wait for the waiter, you become the waiter",
+            "The word 'queue' is just Q followed by 4 silent letters",
+            "Your future self is watching you through memories",
+            "Clapping is hitting yourself because you like something",
+            "The brain named itself",
+            "Nothing is on fire, fire is on things",
+            "We're all just walking each other home",
+            "Coffee is just bean soup",
+            "Positive mind, positive vibes, positive life",
+            "The quieter you become, the more you can hear"
+        ]
+        return thoughts.randomElement() ?? "Time to reflect"
     }
 }
