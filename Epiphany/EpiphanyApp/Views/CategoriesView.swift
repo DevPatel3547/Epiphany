@@ -2,7 +2,7 @@
 //  CategoriesView.swift
 //  Epiphany
 //
-//  RENAMED FROM BROWSE - Category selection system
+//  Category selection for 20 categories
 //
 
 import SwiftUI
@@ -166,11 +166,23 @@ struct CategoryCard: View {
         case .philosophy: return "brain.head.profile"
         case .science: return "atom"
         case .technology: return "laptopcomputer"
-        case .everyday: return "house.fill"
+        case .psychology: return "person.fill.questionmark"
         case .language: return "textformat"
-        case .existential: return "questionmark.circle"
         case .society: return "person.3.fill"
+        case .existential: return "questionmark.circle"
+        case .everyday: return "house.fill"
+        case .time: return "clock.fill"
+        case .mathematics: return "function"
         case .nature: return "leaf.fill"
+        case .relationships: return "heart.circle.fill"
+        case .consciousness: return "eye.fill"
+        case .history: return "book.closed.fill"
+        case .space: return "sparkles"
+        case .logic: return "puzzlepiece.fill"
+        case .perception: return "eye.trianglebadge.exclamationmark.fill"
+        case .identity: return "person.crop.circle.fill"
+        case .ethics: return "scale.3d"
+        case .reality: return "cube.transparent.fill"
         }
     }
 }

@@ -2,7 +2,7 @@
 //  ThoughtModel.swift
 //  Epiphany
 //
-//  Shared model for shower thoughts
+//  UPDATED with 20 categories
 //
 
 import Foundation
@@ -32,16 +32,28 @@ struct ThoughtData: Codable {
     let category: String
 }
 
-// Categories
+// 20 CATEGORIES
 enum ThoughtCategory: String, CaseIterable, Codable {
-    case existential = "Existential"
+    case philosophy = "Philosophy"
     case science = "Science"
+    case technology = "Technology"
+    case psychology = "Psychology"
     case language = "Language"
     case society = "Society"
-    case philosophy = "Philosophy"
+    case existential = "Existential"
     case everyday = "Everyday"
-    case technology = "Technology"
+    case time = "Time"
+    case mathematics = "Mathematics"
     case nature = "Nature"
+    case relationships = "Relationships"
+    case consciousness = "Consciousness"
+    case history = "History"
+    case space = "Space"
+    case logic = "Logic"
+    case perception = "Perception"
+    case identity = "Identity"
+    case ethics = "Ethics"
+    case reality = "Reality"
     
     var displayName: String {
         self.rawValue
