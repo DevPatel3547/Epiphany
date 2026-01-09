@@ -2,17 +2,32 @@
 //  TodayView.swift
 //  Epiphany
 //
+//  WITH CATEGORY FILTERING
+//
 
 import SwiftUI
 import SwiftData
 
 struct TodayView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query private var thoughts: [Thought]
+    @Query private var allThoughts: [Thought]
     @EnvironmentObject var subscriptionManager: SubscriptionManager
     
     @AppStorage("selectedThemeID") private var selectedThemeID: String = "dark"
+    @AppStorage("selectedCategories") private var selectedCategoriesData: Data = Data()
     @State private var showPaywall = false
+    
+    private var selectedCategories: Set<String> {
+        (try? JSONDecoder().decode(Set<String>.self, from: selectedCategoriesData)) ?? []
+    }
+    
+    // Filter thoughts based on selected categories
+    private var filteredThoughts: [Thought] {
+        if selectedCategories.isEmpty || !subscriptionManager.isPremium {
+            return allThoughts
+        }
+        return allThoughts.filter { selectedCategories.contains($0.category) }
+    }
     
     private var currentTheme: AppTheme {
         AppTheme.defaultThemes.first { $0.id == selectedThemeID } ?? AppTheme.defaultThemes[1]
@@ -20,31 +35,42 @@ struct TodayView: View {
     
     var body: some View {
         ZStack {
-            // Background color from theme
             currentTheme.backgroundUIColor.ignoresSafeArea()
             
-            if thoughts.isEmpty {
-                // Empty state
+            if filteredThoughts.isEmpty {
                 VStack {
-                    Text("No thoughts yet")
+                    Text("No thoughts in selected categories")
                         .foregroundColor(currentTheme.textUIColor.opacity(0.5))
                 }
             } else {
                 VStack(spacing: 0) {
-                    // Top bar with icons (blends into background, no navbar)
+                    // Top bar
                     HStack {
-                        // Favorites count indicator
+                        // Favorites count
                         HStack(spacing: 6) {
                             Image(systemName: "heart")
                                 .font(.system(size: 16))
-                            Text("\(thoughts.filter { $0.isFavorite }.count)/\(thoughts.count)")
+                            Text("\(allThoughts.filter { $0.isFavorite }.count)/\(allThoughts.count)")
                                 .font(.system(size: 14))
                         }
                         .foregroundColor(currentTheme.textUIColor.opacity(0.4))
                         
                         Spacer()
                         
-                        // Premium button - navigates to same PaywallView as Settings
+                        // Category filter indicator (if premium + categories selected)
+                        if subscriptionManager.isPremium && !selectedCategories.isEmpty {
+                            HStack(spacing: 4) {
+                                Image(systemName: "line.3.horizontal.decrease.circle")
+                                    .font(.system(size: 14))
+                                Text("\(selectedCategories.count)")
+                                    .font(.system(size: 12))
+                            }
+                            .foregroundColor(currentTheme.accentUIColor)
+                        }
+                        
+                        Spacer()
+                        
+                        // Premium button
                         Button {
                             showPaywall = true
                         } label: {
@@ -57,10 +83,10 @@ struct TodayView: View {
                     .padding(.top, 16)
                     .padding(.bottom, 8)
                     
-                    // Scrollable card feed - VERTICAL ONLY, NO HORIZONTAL SWIPE
+                    // Scrollable cards
                     ScrollView {
                         LazyVStack(spacing: 0) {
-                            ForEach(thoughts, id: \.id) { thought in
+                            ForEach(filteredThoughts, id: \.id) { thought in
                                 ThoughtCardView(
                                     thought: thought,
                                     theme: currentTheme,
@@ -91,7 +117,7 @@ struct TodayView: View {
     }
 }
 
-// MARK: - Thought Card Component
+// ThoughtCardView stays the same
 struct ThoughtCardView: View {
     let thought: Thought
     let theme: AppTheme
@@ -101,19 +127,14 @@ struct ThoughtCardView: View {
         VStack(spacing: 0) {
             Spacer()
             
-            // Category badge at top
             Text(thought.category)
                 .font(.system(size: 11, weight: .medium))
                 .foregroundColor(theme.accentUIColor.opacity(0.6))
                 .padding(.horizontal, 14)
                 .padding(.vertical, 6)
-                .background(
-                    Capsule()
-                        .fill(theme.accentUIColor.opacity(0.1))
-                )
+                .background(Capsule().fill(theme.accentUIColor.opacity(0.1)))
                 .padding(.bottom, 24)
             
-            // Main thought text - large, centered
             Text(thought.text)
                 .font(.system(size: 26, weight: .regular, design: .rounded))
                 .foregroundColor(theme.textUIColor)
@@ -124,9 +145,7 @@ struct ThoughtCardView: View {
             
             Spacer()
             
-            // Action buttons INSIDE each card
             HStack(spacing: 50) {
-                // Share button
                 ShareLink(item: thought.text) {
                     VStack(spacing: 4) {
                         Image(systemName: "square.and.arrow.up")
@@ -137,7 +156,6 @@ struct ThoughtCardView: View {
                     .foregroundColor(theme.textUIColor.opacity(0.5))
                 }
                 
-                // Like button - empty when not liked, filled when liked
                 Button {
                     onToggleFavorite()
                 } label: {
@@ -154,7 +172,6 @@ struct ThoughtCardView: View {
                     onToggleFavorite()
                 })
                 
-                // Copy button
                 Button {
                     UIPasteboard.general.string = thought.text
                 } label: {

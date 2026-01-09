@@ -2,6 +2,8 @@
 //  ContentView.swift
 //  Epiphany
 //
+//  WITH ONBOARDING CHECK
+//
 
 import SwiftUI
 import SwiftData
@@ -9,6 +11,7 @@ import SwiftData
 struct ContentView: View {
     @State private var selectedTab = 0
     @AppStorage("selectedThemeID") private var selectedThemeID: String = "dark"
+    @State private var showWelcome = !UserDefaults.standard.bool(forKey: "hasSeenOnboarding")
     
     private var currentTheme: AppTheme {
         AppTheme.defaultThemes.first { $0.id == selectedThemeID } ?? AppTheme.defaultThemes[1]
@@ -26,9 +29,9 @@ struct ContentView: View {
                     }
                     .tag(0)
                 
-                BrowseView()
+                CategoriesView()
                     .tabItem {
-                        Label("Browse", systemImage: "list.bullet")
+                        Label("Categories", systemImage: "square.grid.2x2")
                     }
                     .tag(1)
                 
@@ -54,8 +57,10 @@ struct ContentView: View {
         }
         .preferredColorScheme(selectedThemeID == "dark" ? .dark : .light)
         .onChange(of: selectedThemeID) { oldValue, newValue in
-            // Save theme change to AppGroup for widget access
             AppGroup.shared?.set(newValue, forKey: AppGroup.Keys.selectedThemeID)
+        }
+        .fullScreenCover(isPresented: $showWelcome) {
+            WelcomeView()
         }
     }
 }
