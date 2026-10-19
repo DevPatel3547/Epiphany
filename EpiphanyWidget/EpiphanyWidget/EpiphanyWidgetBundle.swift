@@ -11,5 +11,6 @@ struct EpiphanyWidgetBundle: WidgetBundle {
     var body: some Widget {
         EpiphanyWidget()
         EpiphanyLockScreenWidget()
+        SaveThoughtControl()
     }
 }

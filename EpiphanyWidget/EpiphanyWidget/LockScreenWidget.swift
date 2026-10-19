@@ -5,6 +5,7 @@
 //  Lock Screen widget implementation
 //
 
+import AppIntents
 import WidgetKit
 import SwiftUI
 
@@ -45,9 +46,18 @@ struct LockScreenWidgetView: View {
             
         case .accessoryRectangular:
             VStack(alignment: .leading, spacing: 4) {
-                Text(entry.thought.category)
-                    .font(.caption2.bold())
-                    .foregroundColor(entry.theme.accentUIColor)
+                HStack {
+                    Text(entry.thought.category)
+                        .font(.caption2.bold())
+                        .foregroundColor(entry.theme.accentUIColor)
+                    Spacer()
+                    // Save straight from the Lock Screen.
+                    Button(intent: ToggleFavoriteThoughtIntent(thoughtID: entry.thought.id)) {
+                        Image(systemName: entry.thought.isFavorite ? "heart.fill" : "heart")
+                            .font(.caption2)
+                    }
+                    .buttonStyle(.plain)
+                }
                 
                 Text(entry.thought.text)
                     .font(.caption2)

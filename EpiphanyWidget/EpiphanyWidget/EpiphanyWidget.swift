@@ -3,82 +3,100 @@
 //  EpiphanyWidget
 //
 
+import AppIntents
 import WidgetKit
 import SwiftUI
 import SwiftData
 
+/// Value snapshot of a `Thought`, safe to hand to WidgetKit outside the model context.
+struct ThoughtSnapshot: Hashable {
+    let id: String
+    let text: String
+    let category: String
+    let isFavorite: Bool
+
+    init(id: String, text: String, category: String, isFavorite: Bool = false) {
+        self.id = id
+        self.text = text
+        self.category = category
+        self.isFavorite = isFavorite
+    }
+
+    init(_ thought: Thought) {
+        self.init(id: thought.id, text: thought.text, category: thought.category, isFavorite: thought.isFavorite)
+    }
+
+    static let placeholder = ThoughtSnapshot(id: "placeholder", text: "The quieter you become, the more you can hear", category: "Philosophy")
+}
+
+/// Reads thoughts from the SwiftData store in the shared App Group container,
+/// so the widget shows (and saves to) the same data as the app, even if the app
+/// has never been foregrounded.
 struct Provider: TimelineProvider {
     typealias Entry = ThoughtEntry
-    
+
     func placeholder(in context: Context) -> ThoughtEntry {
-        ThoughtEntry(
-            date: Date(),
-            thought: Thought(id: "placeholder", text: "Your daily shower thought", category: "General"),
-            theme: getCurrentTheme()
-        )
+        ThoughtEntry(date: Date(), thought: .placeholder, theme: Self.currentTheme())
     }
 
     func getSnapshot(in context: Context, completion: @escaping (ThoughtEntry) -> ()) {
-        let thought = getRandomThoughtSync() ?? Thought(id: "1", text: "The quieter you become, the more you can hear", category: "Philosophy")
-        let entry = ThoughtEntry(
-            date: Date(),
-            thought: thought,
-            theme: getCurrentTheme()
-        )
-        completion(entry)
+        Task { @MainActor in
+            let thought = await Self.loadThoughts(count: 1).first ?? .placeholder
+            completion(ThoughtEntry(date: Date(), thought: thought, theme: Self.currentTheme()))
+        }
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<ThoughtEntry>) -> ()) {
-        var entries: [ThoughtEntry] = []
-        let currentDate = Date()
-        
-        let isPremium = AppGroup.shared?.bool(forKey: AppGroup.Keys.isPremium) ?? false
-        let interval = isPremium ? 3600 : 14400
-        
-        for hourOffset in 0..<24 {
-            let entryDate = Calendar.current.date(byAdding: .second, value: hourOffset * interval, to: currentDate)!
-            
-            if let thought = getRandomThoughtSync() {
-                let entry = ThoughtEntry(
-                    date: entryDate,
-                    thought: thought,
-                    theme: getCurrentTheme()
-                )
-                entries.append(entry)
-            }
-        }
+        Task { @MainActor in
+            let isPremium = AppGroup.shared?.bool(forKey: AppGroup.Keys.isPremium) ?? false
+            let interval = isPremium ? 3600 : 14400
+            let theme = Self.currentTheme()
+            let currentDate = Date()
 
-        let timeline = Timeline(entries: entries, policy: .atEnd)
-        completion(timeline)
+            let thoughts = await Self.loadThoughts(count: 24)
+            var entries = thoughts.enumerated().map { offset, thought in
+                ThoughtEntry(
+                    date: Calendar.current.date(byAdding: .second, value: offset * interval, to: currentDate)!,
+                    thought: thought,
+                    theme: theme
+                )
+            }
+            if entries.isEmpty {
+                entries = [ThoughtEntry(date: currentDate, thought: .placeholder, theme: theme)]
+            }
+            completion(Timeline(entries: entries, policy: .atEnd))
+        }
     }
-    
-    private func getCurrentTheme() -> AppTheme {
+
+    /// First thought is the one currently pinned to the widget (so a tapped heart
+    /// stays on screen); the rest are random picks from the shared store.
+    @MainActor
+    private static func loadThoughts(count: Int) async -> [ThoughtSnapshot] {
+        let data = DataManager.shared
+        await data.loadInitialThoughtsIfNeeded()
+
+        let all = data.fetchAllThoughts()
+        guard !all.isEmpty else { return [] }
+
+        let first = data.currentWidgetThought ?? all.randomElement()!
+        data.setCurrentWidgetThought(first)
+
+        var picks = [ThoughtSnapshot(first)]
+        for thought in all.shuffled() where picks.count < count && thought.id != first.id {
+            picks.append(ThoughtSnapshot(thought))
+        }
+        return picks
+    }
+
+    static func currentTheme() -> AppTheme {
         let themeID = AppGroup.shared?.string(forKey: AppGroup.Keys.selectedThemeID) ?? "dark"
         return AppTheme.defaultThemes.first { $0.id == themeID } ?? AppTheme.defaultThemes[1]
-    }
-    
-    private func getRandomThoughtSync() -> Thought? {
-        let thoughts = [
-            Thought(id: "1", text: "If you wait for the waiter, you become the waiter", category: "Philosophy"),
-            Thought(id: "2", text: "The word 'queue' is just Q followed by 4 silent letters", category: "Language"),
-            Thought(id: "3", text: "Your future self is watching you through memories", category: "Existential"),
-            Thought(id: "4", text: "Clapping is hitting yourself because you like something", category: "Everyday"),
-            Thought(id: "5", text: "The brain named itself", category: "Science"),
-            Thought(id: "6", text: "Nothing is on fire, fire is on things", category: "Science"),
-            Thought(id: "7", text: "We're all just walking each other home", category: "Philosophy"),
-            Thought(id: "8", text: "Your skeleton is always wet", category: "Science"),
-            Thought(id: "9", text: "Reading is staring at a dead tree and hallucinating", category: "Philosophy"),
-            Thought(id: "10", text: "Coffee is just bean soup", category: "Everyday"),
-            Thought(id: "11", text: "Positive mind, positive vibes, positive life", category: "Motivation"),
-            Thought(id: "12", text: "The quieter you become, the more you can hear", category: "Philosophy")
-        ]
-        return thoughts.randomElement()
     }
 }
 
 struct ThoughtEntry: TimelineEntry {
     let date: Date
-    let thought: Thought
+    let thought: ThoughtSnapshot
     let theme: AppTheme
 }
 
@@ -101,13 +119,35 @@ struct EpiphanyWidgetEntryView: View {
             
             Spacer()
             
-            if family != .systemSmall {
-                Text(entry.thought.category.uppercased())
-                    .font(.system(size: 9, weight: .semibold, design: .rounded))
-                    .tracking(2)
-                    .foregroundColor(entry.theme.textUIColor.opacity(0.25))
-                    .padding(.bottom, 20)
+            HStack {
+                // Interactive (iOS 17+): runs the intent in the widget extension,
+                // writing to the shared SwiftData store without opening the app.
+                Button(intent: ToggleFavoriteThoughtIntent(thoughtID: entry.thought.id)) {
+                    Image(systemName: entry.thought.isFavorite ? "heart.fill" : "heart")
+                }
+                .accessibilityLabel(entry.thought.isFavorite ? "Remove from Favorites" : "Save to Favorites")
+                
+                Spacer()
+                
+                if family != .systemSmall {
+                    Text(entry.thought.category.uppercased())
+                        .font(.system(size: 9, weight: .semibold, design: .rounded))
+                        .tracking(2)
+                        .foregroundColor(entry.theme.textUIColor.opacity(0.25))
+                    
+                    Spacer()
+                }
+                
+                Button(intent: NextThoughtIntent()) {
+                    Image(systemName: "arrow.forward")
+                }
+                .accessibilityLabel("Next thought")
             }
+            .buttonStyle(.plain)
+            .font(.system(size: 14, weight: .semibold))
+            .foregroundColor(entry.theme.accentUIColor)
+            .padding(.horizontal, family == .systemSmall ? 4 : 12)
+            .padding(.bottom, family == .systemSmall ? 0 : 8)
         }
         .widgetURL(URL(string: "epiphany://thought/\(entry.thought.id)"))
     }
@@ -161,7 +201,7 @@ struct EpiphanyWidget: Widget {
                 .containerBackground(entry.theme.backgroundUIColor, for: .widget)
         }
         .configurationDisplayName("Epiphany")
-        .description("Daily shower thoughts")
+        .description("Daily shower thoughts. Tap the heart to save one without opening the app.")
         .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
     }
 }
@@ -171,7 +211,7 @@ struct EpiphanyWidget: Widget {
 } timeline: {
     ThoughtEntry(
         date: .now,
-        thought: Thought(id: "1", text: "Positive mind, positive vibes, positive life", category: "Motivation"),
+        thought: ThoughtSnapshot(id: "1", text: "Positive mind, positive vibes, positive life", category: "Motivation"),
         theme: AppTheme.defaultThemes[1]
     )
 }
