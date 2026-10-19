@@ -59,11 +59,13 @@
 		1D51FCD82EF8CF1C00EDA0B7 /* Exceptions for "Epiphany" folder in "EpiphanyWidgetExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				EpiphanyApp/Resources/thoughts.json,
 				Shared/AppGroup.swift,
 				Shared/DataManager.swift,
 				Shared/NotificationManager.swift,
 				Shared/SubscriptionManager.swift,
 				Shared/ThemeModel.swift,
+				Shared/ThoughtIntents.swift,
 				Shared/ThoughtModel.swift,
 			);
 			target = 1D51FC942EF8CD7200EDA0B7 /* EpiphanyWidgetExtension */;

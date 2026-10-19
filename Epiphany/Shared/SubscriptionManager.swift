@@ -8,6 +8,7 @@
 import Foundation
 import StoreKit
 import Combine
+import WidgetKit
 
 @MainActor
 class SubscriptionManager: ObservableObject {
@@ -16,7 +17,7 @@ class SubscriptionManager: ObservableObject {
     @Published var isPremium: Bool = false
     @Published var products: [Product] = []
     
-    // Placeholder product ID - replace with actual ID from App Store Connect
+    // Must match the product in App Store Connect and Configuration.storekit
     private let premiumProductID = "com.thefool.Epiphany.premium.monthly"
     
     private var updateListenerTask: Task<Void, Never>? = nil
@@ -85,7 +86,10 @@ class SubscriptionManager: ObservableObject {
                 continue
             }
             
-            if transaction.productID == premiumProductID {
+            // Only a verified, unrevoked, unexpired entitlement unlocks premium.
+            if transaction.productID == premiumProductID,
+               transaction.revocationDate == nil,
+               (transaction.expirationDate ?? .distantFuture) > Date() {
                 isSubscribed = true
             }
         }
@@ -94,6 +98,7 @@ class SubscriptionManager: ObservableObject {
         
         // Save to App Group for widget access
         AppGroup.shared?.set(isSubscribed, forKey: AppGroup.Keys.isPremium)
+        WidgetCenter.shared.reloadAllTimelines()
     }
     
     func restorePurchases() async {

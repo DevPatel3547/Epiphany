@@ -23,6 +23,9 @@ final class Thought {
         self.isFavorite = isFavorite
         self.createdAt = Date()
     }
+    
+    /// Category assigned to thoughts the user captures from the widget, a Control or Shortcuts.
+    static let capturedCategory = "Captured"
 }
 
 // JSON-decodable version for initial data loading

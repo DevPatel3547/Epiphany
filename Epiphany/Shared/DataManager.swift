@@ -2,11 +2,14 @@
 //  DataManager.swift
 //  Epiphany
 //
-//  Manages SwiftData persistence and thought loading
+//  Manages SwiftData persistence and thought loading.
+//  The store lives in the App Group container, so the app and the widget
+//  extension (including its App Intents) read and write the same database.
 //
 
 import Foundation
 import SwiftData
+import WidgetKit
 
 @MainActor
 class DataManager {
@@ -112,6 +115,49 @@ class DataManager {
     func toggleFavorite(_ thought: Thought) {
         thought.isFavorite.toggle()
         try? modelContext.save()
+        WidgetCenter.shared.reloadAllTimelines()
+    }
+    
+    // MARK: - Capture (used by widget buttons, Controls and Shortcuts)
+    
+    /// The thought currently surfaced on the widget, persisted in the App Group.
+    var currentWidgetThought: Thought? {
+        guard let id = AppGroup.shared?.string(forKey: AppGroup.Keys.lastThoughtID) else { return nil }
+        return getThought(by: id)
+    }
+    
+    func setCurrentWidgetThought(_ thought: Thought) {
+        AppGroup.shared?.set(thought.id, forKey: AppGroup.Keys.lastThoughtID)
+    }
+    
+    /// Toggles a thought's favorite state by ID. Returns the new state, or nil if not found.
+    @discardableResult
+    func toggleFavorite(id: String) -> Bool? {
+        guard let thought = getThought(by: id) else { return nil }
+        thought.isFavorite.toggle()
+        try? modelContext.save()
+        return thought.isFavorite
+    }
+    
+    /// Saves a new user-written thought straight into the shared store.
+    @discardableResult
+    func captureThought(text: String) -> Thought? {
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
+        let thought = Thought(
+            id: "captured-\(UUID().uuidString)",
+            text: trimmed,
+            category: Thought.capturedCategory,
+            isFavorite: true
+        )
+        modelContext.insert(thought)
+        do {
+            try modelContext.save()
+        } catch {
+            print("Error saving captured thought: \(error)")
+            return nil
+        }
+        return thought
     }
     
     func getRandomThought() -> Thought? {
